@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CHAN Platform Engine</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-900">
+
+  <!-- 1. GOOGLE AUTHENTICATION SCREEN -->
+  <div id="auth-screen" class="flex min-h-screen items-center justify-center p-6">
+    <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-xl max-w-md w-full text-center space-y-6">
+      <div>
+        <h2 class="text-3xl font-bold font-serif text-slate-900">CHAN Platform</h2>
+        <p class="text-sm text-slate-500 mt-2">Sign in via Google to access verified Islamic attachments and guides.</p>
+      </div>
+      <button onclick="window.loginWithGoogle()" class="w-full bg-slate-950 hover:bg-slate-800 text-white font-semibold py-3 rounded-xl text-xs transition-all cursor-pointer shadow-sm flex items-center justify-center gap-2">
+        <svg class="h-4 w-4" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Sign In with Google
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. CORE SYSTEM WINDOW (Hidden until successfully verified) -->
+  <div id="main-app" class="hidden max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-4 gap-8">
+    
+    <!-- SYSTEM CONTROLS SIDEBAR -->
+    <div class="lg:col-span-1 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6 h-fit sticky top-6">
+      <div class="border-b border-slate-100 pb-4 text-center">
+        <img id="user-avatar" src="" class="h-16 w-16 rounded-full mx-auto bg-slate-100 object-cover border border-slate-200 shadow-inner">
+        <div id="user-name" class="text-base font-bold text-slate-900 mt-2 truncate">---</div>
+        <div id="user-email" class="text-xs text-slate-400 truncate">---</div>
+        <div id="user-badge" class="mt-2 inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800">
+          Syncing Server Pass...
+        </div>
+      </div>
+
+      <!-- PROFILE MANAGER (Change photo and name) -->
+      <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Customize Identity</h4>
+        <div>
+          <label class="block text-[10px] font-semibold text-slate-400 mb-0.5">Display Name</label>
+          <input id="input-display-name" type="text" class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs focus:outline-slate-900">
+        </div>
+        <div>
+          <label class="block text-[10px] font-semibold text-slate-400 mb-0.5">Custom Photo URL</label>
+          <input id="input-photo-url" type="text" placeholder="https://..." class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs focus:outline-slate-900">
+        </div>
+        <button onclick="window.saveCustomProfile()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-1.5 rounded-lg text-xs cursor-pointer transition-colors">
+          Save Settings
+        </button>
+      </div>
+
+      <!-- DEV PERMISSIONS HUB -->
+      <div id="dev-panel" class="hidden p-4 bg-red-50 border border-red-200 rounded-xl space-y-3">
+        <h3 class="text-xs font-bold text-red-800 uppercase tracking-wider">🛠️ Dev Console</h3>
+        <div id="dev-user-list" class="space-y-2 text-xs max-h-48 overflow-y-auto"></div>
+      </div>
+
+      <button onclick="window.logoutUser()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 rounded-xl text-xs transition-all cursor-pointer">
+        🚪 Log Out
+      </button>
+    </div>
+
+    <!-- MAIN INTERFACE FEED -->
+    <div class="lg:col-span-3 space-y-6">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+        <h1 class="text-3xl font-bold text-slate-900 font-serif">Islamic Knowledge Base</h1>
+        <span class="text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-semibold">Live Backend Sync</span>
+      </div>
+
+      <!-- PUBLISH ENGINE -->
+      <div id="attachment-poster" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+        <h3 class="text-sm font-bold text-slate-900">Publish Certified Attachment</h3>
+        <textarea id="post-text" placeholder="Write text resource or script contents here..." class="w-full p-4 border border-slate-200 bg-slate-50 rounded-xl text-sm h-24 focus:outline-slate-900"></textarea>
+        <div class="flex gap-3">
+          <input id="post-link" type="text" placeholder="Optional media/video URL attachment link" class="px-4 py-2 border border-slate-200 bg-slate-50 rounded-xl text-xs flex-1 focus:outline-slate-900">
+          <button onclick="window.addPost()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-6 rounded-xl text-xs cursor-pointer">Publish</button>
+        </div>
+      </div>
+
+      <!-- INTERFACE ROW -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="md:col-span-2 space-y-4" id="posts-feed"></div>
+        
+        <!-- PIOUS DIRECTORY -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-4 h-fit">
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Trusted Guides (Pious List)</h3>
+          <div id="pious-list" class="space-y-3"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FIREBASE MODULE LOGIC ARCHITECTURE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, onSnapshot, addDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Linked directly to your official CHAN project coordinates
+    const firebaseConfig = {
+      apiKey: "AIzaSyArDVRPKuZnvd6PSesT-_Tz7-QOGz4yesc",
+      authDomain: "chan-b67fe.firebaseapp.com",
+      projectId: "chan-b67fe",
+      storageBucket: "chan-b67fe.firebasestorage.app",
+      messagingSenderId: "373656065280",
+      appId: "1:373656065280:web:27107c122f1775d6098fe5",
+      measurementId: "G-FZHQK2GPWS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    let localUserData = null;
+
+    // --- GOOGLE LOGIN ---
+    window.loginWithGoogle = async function() {
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (!userDoc.exists()) {
+          await setDoc(userDocRef, {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName || "New Seeker",
+            photoURL: user.photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+            isDev: false, // Change this record to true inside your Firebase Console to make yourself Admin!
+            isPious: false,
+            isOnline: true
+          });
+        } else {
+          await updateDoc(userDocRef, { isOnline: true });
+        }
+      } catch (e) { console.error("Auth Exception:", e); }
+    };
+
+    // --- SECURE LOGOUT ---
+    window.logoutUser = async function() {
+      if (auth.currentUser) {
+        await updateDoc(doc(db, "users", auth.currentUser.uid), { isOnline: false });
+        await signOut(auth);
+      }
+    };
+
+    // --- CUSTOM PROFILE HANDLER ---
+    window.saveCustomProfile = async function() {
+      if (!auth.currentUser) return;
+      const name = document.getElementById('input-display-name').value;
+      const url = document.getElementById('input-photo-url').value;
+      if (name) {
+        await updateDoc(doc(db, "users", auth.currentUser.uid), {
+          displayName: name,
+          photoURL: url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+        });
+        alert("Local settings synced with Cloud Firestore.");
+      }
+    };
+
+    // --- POST FEED MANAGEMENT ---
+    window.addPost = async function() {
+      const text = document.getElementById('post-text').value;
+      const link = document.getElementById('post-link').value;
+      if (!text || !localUserData) return;
+
+      let currentRole = localUserData.isDev ? 'Developer' : 'Pious Mentor';
+      await addDoc(collection(db, "posts"), {
+        author: localUserData.displayName,
+        role: currentRole,
+        text: text,
+        link: link,
+        timestamp: Date.now()
+      });
+
+      document.getElementById('post-text').value = '';
+      document.getElementById('post-link').value = '';
+    };
+
+    // --- TOGGLE ROLE MANIPULATOR ---
+    window.toggleRole = async function(uid, field, currentVal) {
+      const targetRef = doc(db, "users", uid);
+      await updateDoc(targetRef, { [field]: !currentVal });
+    };
+
+    // --- ON STATE AUTH CHANGED SYNC ---
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        document.getElementById('auth-screen').classList.add('hidden');
+        document.getElementById('main-app').classList.remove('hidden');
+        
+        // Start live sync stream of current user record
+        onSnapshot(doc(db, "users", user.uid), (snap) => {
+          if (!snap.exists()) return;
+          const data = snap.data();
+          localUserData = data;
+
+          document.getElementById('user-avatar').src = data.photoURL;
+          document.getElementById('user-name').innerText = data.displayName;
+          document.getElementById('user-email').innerText = data.email;
+          
+          document.getElementById('input-display-name').value = data.displayName;
+          document.getElementById('input-photo-url').value = data.photoURL;
+
+          const badge = document.getElementById('user-badge');
+          if (data.isDev) {
+            badge.className = "mt-2 inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-800";
+            badge.innerText = "Developer Pass";
+            document.getElementById('dev-panel').classList.remove('hidden');
+            document.getElementById('attachment-poster').classList.remove('hidden');
+          } else if (data.isPious) {
+            badge.className = "mt-2 inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800";
+            badge.innerText = "Pious Pass (Experimental)";
+            document.getElementById('dev-panel').classList.add('hidden');
+            document.getElementById('attachment-poster').classList.remove('hidden');
+          } else {
+            badge.className = "mt-2 inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800";
+            badge.innerText = "Standard Seeker Pass";
+            document.getElementById('dev-panel').classList.add('hidden');
+            document.getElementById('attachment-poster').classList.add('hidden');
+          }
+        });
+
+        // Sync Global Collections
+        syncCollections();
+      } else {
+        document.getElementById('auth-screen').classList.remove('hidden');
+        document.getElementById('main-app').classList.add('hidden');
+      }
+    });
+
+    function syncCollections() {
+      // Stream Master Users Collection
+      onSnapshot(collection(db, "users"), (snapshot) => {
+        const userListDiv = document.getElementById('dev-user-list');
+        const piousListDiv = document.getElementById('pious-list');
+        userListDiv.innerHTML = '';
+        piousListDiv.innerHTML = '';
+
+        snapshot.forEach(docSnap => {
+          const u = docSnap.data();
+          
+          // Render to Developer Control view if currentUser is admin
+          if (auth.currentUser && u.uid !== auth.currentUser.uid) {
+            userListDiv.innerHTML += `
+              <div class="p-2 bg-white rounded-lg border border-slate-200 space-y-1">
+                <div class="font-bold truncate text-slate-800">${u.displayName}</div>
+                <div class="flex gap-1">
+                  <button onclick="window.toggleRole('${u.uid}', 'isDev', ${u.isDev})" class="px-1 py-0.5 text-[9px] rounded font-bold ${u.isDev ? 'bg-red-200 text-red-800':'bg-slate-100 text-slate-600'}">Dev</button>
+                  <button onclick="window.toggleRole('${u.uid}', 'isPious', ${u.isPious})" class="px-1 py-0.5 text-[9px] rounded font-bold ${u.isPious ? 'bg-emerald-200 text-emerald-800':'bg-slate-100 text-slate-600'}">Pious</button>
+                </div>
+              </div>`;
+          }
+
+          // Render into Pious Mentor Online Tracking Board
+          if (u.isPious || u.isDev) {
+            piousListDiv.innerHTML += `
+              <div class="flex items-center justify-between p-1.5 rounded-lg border border-slate-100">
+                <div class="flex items-center gap-2 min-w-0">
+                  <img src="${u.photoURL}" class="h-6 w-6 rounded-full object-cover bg-slate-50">
+                  <div class="text-xs font-semibold text-slate-800 truncate">${u.displayName}</div>
+                </div>
+                <div class="flex items-center gap-1">
+                  <span class="h-1.5 w-1.5 rounded-full ${u.isOnline ? 'bg-emerald-500':'bg-slate-300'}"></span>
+                  <span class="text-[9px] font-bold ${u.isOnline ? 'text-emerald-600':'text-slate-400'}">${u.isOnline ? 'ONLINE':'OFFLINE'}</span>
+                </div>
+              </div>`;
+          }
+        });
+      });
+
+      // Stream Posts Collection
+      onSnapshot(query(collection(db, "posts"), orderBy("timestamp", "desc")), (snapshot) => {
+        const feed = document.getElementById('posts-feed');
+        feed.innerHTML = '';
+        snapshot.forEach(docSnap => {
+          const p = docSnap.data();
+          feed.innerHTML += `
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-900">${p.author}</span>
+                <span class="px-2 py-0.5 bg-slate-100 text-slate-500 rounded-md text-[9px] font-bold uppercase">${p.role}</span>
+              </div>
+              <p class="text-sm text-slate-700 leading-relaxed">${p.text}</p>
+              ${p.link ? `<a href="${p.link}" target="_blank" class="text-xs text-blue-600 font-medium hover:underline block mt-1">🔗 View Attachment</a>` : ''}
+            </div>`;
+        });
+      });
+    }
+  </script>
+</body>
+</html>
