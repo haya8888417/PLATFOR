@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wa'i Platform</title>
+    <!-- 🖼️ Browser Tab Favicon -->
+    <link rel="icon" type="image/png" href="logo.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -30,16 +33,17 @@
     </div>
 
     <!-- 🔝 TOP NAVBAR HEADER -->
-    <header id="app-header" class="hidden sticky top-0 bg-white border-b border-gray-100 z-30 px-4 py-3 flex items-center justify-between">
+    <header id="app-header" class="hidden sticky top-0 bg-white border-b border-gray-100 z-30 px-4 py-2 flex items-center justify-between shadow-sm">
         <div class="flex items-center gap-3">
-            <h1 class="text-xl font-extrabold text-emerald-700 tracking-tight">Wa'i</h1>
-            <div id="user-badges-container" class="flex gap-1.5 items-center">
-                <!-- Role Badges (PIOUS, ATTACHER) -->
+            <!-- 🖼️ Header Logo Image + Text -->
+            <div class="flex items-center gap-2">
+                <img src="logo.png" alt="Wa'i Platform Logo" class="h-9 w-9 object-contain rounded-full shadow-sm">
+                <h1 class="text-xl font-extrabold text-emerald-800 tracking-tight">Wa'i</h1>
             </div>
+            <div id="user-badges-container" class="flex gap-1.5 items-center ml-2"></div>
         </div>
 
         <div class="flex items-center gap-2">
-            <!-- Gear Icon for Profile Settings -->
             <button id="btn-open-profile" title="Profile Settings" class="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
             </button>
@@ -47,10 +51,10 @@
         </div>
     </header>
 
-    <!-- 🌐 MAIN CONTAINER (Feed in Middle, Guides Top Right) -->
+    <!-- 🌐 MAIN CONTAINER -->
     <main id="app-dashboard" class="hidden flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- 📸 ATTACHMENTS FEED (MAIN CENTER AREA - 2 COLS) -->
+        <!-- 📸 ATTACHMENTS FEED -->
         <section class="lg:col-span-2 space-y-4">
             <div class="border-b pb-2 flex justify-between items-center">
                 <h2 class="text-sm font-bold uppercase tracking-wider text-gray-500">Shared Attachments & Resources</h2>
@@ -61,7 +65,7 @@
             </div>
         </section>
 
-        <!-- 🟢 PIOUS GUIDES DIRECTORY (TOP RIGHT CORNER - 1 COL) -->
+        <!-- 🟢 PIOUS GUIDES DIRECTORY -->
         <aside class="space-y-4">
             <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 sticky top-20">
                 <h3 class="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2">
@@ -90,34 +94,15 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Religion / School</label>
-                    <select id="user-religion" required class="w-full text-xs p-2.5 border rounded-xl bg-gray-50">
-                        <option value="">-- Select --</option>
-                        <optgroup label="Islam">
-                            <option value="Islam (Sunnah)">Islam (Sunnah)</option>
-                            <option value="Islam (Shia)">Islam (Shia)</option>
-                            <option value="Islam (Alawi)">Islam (Alawi)</option>
-                            <option value="Islam (Ibadi)">Islam (Ibadi)</option>
-                        </optgroup>
-                        <optgroup label="Other">
-                            <option value="Christianity">Christianity</option>
-                            <option value="Judaism">Judaism</option>
-                            <option value="Buddhism">Buddhism</option>
-                            <option value="Hinduism">Hinduism</option>
-                            <option value="Other / Seeking">Other / Seeking</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Phone / Contact</label>
-                    <input id="user-phone" type="text" placeholder="+60123456789" class="w-full text-xs p-2.5 border rounded-xl bg-gray-50">
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Phone / WhatsApp Contact</label>
+                    <input id="user-phone" type="text" placeholder="+60... or +1..." class="w-full text-xs p-2.5 border rounded-xl bg-gray-50">
                 </div>
                 <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs mt-2">Save Profile</button>
             </form>
         </div>
     </div>
 
-    <!-- 📤 Attacher Upload Modal (Only pops up when ATTACHER button is pressed) -->
+    <!-- 📤 Attacher Upload Modal -->
     <div id="attacher-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 relative">
             <button id="btn-close-attacher-modal" class="absolute top-4 right-4 text-gray-400 text-lg">&times;</button>
@@ -142,14 +127,14 @@
             <button id="btn-close-pious-modal" class="absolute top-4 right-4 text-gray-400 text-lg">&times;</button>
             <h2 class="text-lg font-bold text-emerald-900 mb-1">Pious Guide Settings</h2>
             <div class="space-y-3 mt-4">
-                <button id="btn-toggle-free-status" class="w-full py-2 rounded-xl text-xs font-bold bg-gray-200 text-gray-700">Free Anytime: OFF</button>
+                <button id="btn-toggle-free-status" type="button" class="w-full py-2 rounded-xl text-xs font-bold transition">Free Anytime: OFF</button>
                 <div>
                     <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Bio</label>
                     <textarea id="pious-bio" placeholder="Bio..." class="w-full text-xs p-2.5 border rounded-xl h-16"></textarea>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Contact Link</label>
-                    <input id="pious-contact" type="text" placeholder="+60123456789" class="w-full text-xs p-2.5 border rounded-xl">
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">WhatsApp Contact Number</label>
+                    <input id="pious-contact" type="text" placeholder="e.g. +60123456789 or +123456789" class="w-full text-xs p-2.5 border rounded-xl">
                 </div>
                 <button id="btn-save-pious-folder" class="w-full bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs">Save Settings</button>
             </div>
@@ -181,8 +166,10 @@
         const profileModal = document.getElementById('profile-modal');
         const attacherModal = document.getElementById('attacher-modal');
         const piousModal = document.getElementById('pious-modal');
+        const btnToggleFree = document.getElementById('btn-toggle-free-status');
 
         let currentUserData = {};
+        let isFreeAnytimeState = false;
 
         auth.onAuthStateChanged((user) => {
             setTimeout(() => {
@@ -199,7 +186,15 @@
 
                     userRef.on('value', (snapshot) => {
                         currentUserData = snapshot.val() || {};
-                        if (!currentUserData.gender || !currentUserData.religion) {
+                        
+                        if (currentUserData.piousFolder) {
+                            isFreeAnytimeState = !!currentUserData.piousFolder.isFreeAnytime;
+                            updateFreeButtonUI();
+                            document.getElementById('pious-bio').value = currentUserData.piousFolder.bio || '';
+                            document.getElementById('pious-contact').value = currentUserData.piousFolder.contact || '';
+                        }
+
+                        if (!currentUserData.gender) {
                             profileModal.classList.remove('hidden');
                         } else {
                             renderRoleBadges(currentUserData);
@@ -234,9 +229,34 @@
             }
         }
 
+        function updateFreeButtonUI() {
+            if (isFreeAnytimeState) {
+                btnToggleFree.textContent = "Free Anytime: ON";
+                btnToggleFree.className = "w-full py-2 rounded-xl text-xs font-bold bg-amber-500 text-white transition";
+            } else {
+                btnToggleFree.textContent = "Free Anytime: OFF";
+                btnToggleFree.className = "w-full py-2 rounded-xl text-xs font-bold bg-gray-200 text-gray-700 transition";
+            }
+        }
+
+        btnToggleFree.onclick = () => {
+            isFreeAnytimeState = !isFreeAnytimeState;
+            updateFreeButtonUI();
+        };
+
+        document.getElementById('btn-save-pious-folder').onclick = () => {
+            const bio = document.getElementById('pious-bio').value.trim();
+            const contact = document.getElementById('pious-contact').value.trim();
+
+            database.ref('users/' + auth.currentUser.uid + '/piousFolder').set({
+                isFreeAnytime: isFreeAnytimeState,
+                bio: bio,
+                contact: contact
+            }).then(() => piousModal.classList.add('hidden'));
+        };
+
         document.getElementById('btn-open-profile').onclick = () => {
             document.getElementById('user-gender').value = currentUserData.gender || "";
-            document.getElementById('user-religion').value = currentUserData.religion || "";
             document.getElementById('user-phone').value = currentUserData.phone || "";
             profileModal.classList.remove('hidden');
         };
@@ -245,7 +265,6 @@
             e.preventDefault();
             database.ref('users/' + auth.currentUser.uid).update({
                 gender: document.getElementById('user-gender').value,
-                religion: document.getElementById('user-religion').value,
                 phone: document.getElementById('user-phone').value.trim()
             }).then(() => profileModal.classList.add('hidden'));
         };
@@ -293,16 +312,23 @@
                 const u = users[id];
                 if (u.isPious && u.piousFolder) {
                     count++;
-                    const isFree = u.isOnline && u.piousFolder.isFreeAnytime;
-                    const dotClass = isFree ? "bg-amber-500" : (u.isOnline ? "bg-emerald-500" : "bg-gray-300");
+                    const isOnline = !!u.isOnline;
+                    const isFreeAnytime = !!u.piousFolder.isFreeAnytime;
+                    
+                    // Contact via WhatsApp is only permitted when guide is Online AND Free Anytime is ON
+                    const canContact = isOnline && isFreeAnytime;
+                    
+                    const dotClass = isFreeAnytime ? "bg-amber-500" : (isOnline ? "bg-emerald-500" : "bg-gray-300");
+                    const rawPhone = u.piousFolder.contact ? u.piousFolder.contact.replace(/[^\d]/g, '') : '';
+
                     container.innerHTML += `
                         <div class="p-3 bg-white rounded-xl border text-xs">
                             <div class="flex justify-between items-center font-bold text-gray-800 mb-1">
                                 <span class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-full ${dotClass}"></span>${u.email.split('@')[0]}</span>
-                                ${isFree ? '<span class="text-[9px] bg-amber-100 text-amber-800 px-1 rounded">FREE</span>' : ''}
+                                ${isFreeAnytime ? '<span class="text-[9px] bg-amber-100 text-amber-800 px-1 rounded">FREE</span>' : ''}
                             </div>
                             <p class="text-gray-500 text-[11px] mb-2">${u.piousFolder.bio || ''}</p>
-                            ${u.piousFolder.contact ? `<a href="https://wa.me/${u.piousFolder.contact.replace(/\+/g, '')}" target="_blank" class="text-[10px] text-emerald-700 font-bold underline">Contact Guide</a>` : ''}
+                            ${canContact && rawPhone ? `<a href="https://wa.me/${rawPhone}" target="_blank" class="text-[10px] text-emerald-700 font-bold underline">Contact Guide</a>` : `<span class="text-[10px] text-gray-400 italic">Guide Unavailable</span>`}
                         </div>
                     `;
                 }
