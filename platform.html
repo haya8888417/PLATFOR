@@ -3,263 +3,315 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Islam Platform</title>
+    <title>Wa'i Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 </head>
-<body class="bg-gray-100 font-sans min-h-screen flex flex-col items-center justify-center p-4">
+<body class="bg-white text-gray-900 font-sans min-h-screen flex flex-col">
 
     <!-- ⏳ Loading Screen -->
     <div id="loading-screen" class="fixed inset-0 bg-white flex flex-col items-center justify-center z-50 transition-opacity duration-500">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mb-4"></div>
-        <p class="text-gray-600 font-medium animate-pulse">Loading secure connection...</p>
+        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-600 mb-3"></div>
+        <p class="text-xs text-gray-500 font-medium animate-pulse">Loading Platform...</p>
     </div>
 
     <!-- 🔐 Sign-In Box -->
-    <div id="login-card" class="hidden w-full max-w-md bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-gray-100 flex-col items-center text-center">
-        <h1 class="text-2xl md:text-3xl font-bold text-gray-8xl mb-2">Islam Platform</h1>
-        <p class="text-sm md:text-base text-gray-500 mb-8">Sign in via Google to access verified Islamic attachments and guides.</p>
-        <button id="btn-login" class="w-full flex items-center justify-center gap-3 bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 px-4 rounded-xl transition shadow-md">
-            <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/></svg>
-            Sign In with Google
-        </button>
-    </div>
-
-    <!-- 📱 Main App Dashboard Screen -->
-    <div id="app-dashboard" class="hidden w-full max-w-6xl bg-white rounded-2xl shadow-xl p-4 md:p-6 flex flex-col md:flex-row gap-6">
-        
-        <!-- Sidebar Panel -->
-        <div class="w-full md:w-1/4 bg-gray-50 p-4 rounded-xl flex flex-col justify-between border border-gray-100">
-            <div class="flex flex-col items-center text-center w-full">
-                <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center text-xl font-bold text-emerald-700 mb-3 border border-emerald-200">U</div>
-                <h2 id="user-display-name" class="font-bold text-gray-800 break-all px-2">User Profile</h2>
-                <p id="user-role-badge" class="text-xs font-semibold bg-gray-200 text-gray-700 px-2.5 py-1 rounded-full mt-2 uppercase tracking-wider">Guest</p>
-            </div>
-            
-            <button id="btn-logout" class="w-full mt-6 bg-red-50 text-red-600 hover:bg-red-100 font-semibold py-2.5 px-4 rounded-xl transition border border-red-200">
-                Log Out
+    <div id="login-card" class="hidden fixed inset-0 bg-white flex flex-col items-center justify-center p-4 z-40">
+        <div class="max-w-sm w-full text-center">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Wa'i Platform</h1>
+            <p class="text-xs text-gray-500 mb-6">Connect, share attachments, and seek verified guidance.</p>
+            <button id="btn-login" class="w-full flex items-center justify-center gap-3 bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 px-4 rounded-xl transition shadow-md text-sm">
+                Sign In with Google
             </button>
         </div>
+    </div>
 
-        <!-- Main Workspace -->
-        <div class="w-full md:w-3/4 flex flex-col gap-6 border-t md:border-t-0 md:border-l border-gray-100 pt-6 md:pt-0 md:pl-6">
+    <!-- 🔝 TOP NAVBAR HEADER -->
+    <header id="app-header" class="hidden sticky top-0 bg-white border-b border-gray-100 z-30 px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <h1 class="text-xl font-extrabold text-emerald-700 tracking-tight">Wa'i</h1>
+            <div id="user-badges-container" class="flex gap-1.5 items-center">
+                <!-- Role Badges (PIOUS, ATTACHER) -->
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <!-- Gear Icon for Profile Settings -->
+            <button id="btn-open-profile" title="Profile Settings" class="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </button>
+            <button id="btn-logout" class="text-xs font-semibold text-red-500 hover:text-red-700 px-2 py-1">Log Out</button>
+        </div>
+    </header>
+
+    <!-- 🌐 MAIN CONTAINER (Feed in Middle, Guides Top Right) -->
+    <main id="app-dashboard" class="hidden flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- 📸 ATTACHMENTS FEED (MAIN CENTER AREA - 2 COLS) -->
+        <section class="lg:col-span-2 space-y-4">
+            <div class="border-b pb-2 flex justify-between items-center">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-gray-500">Shared Attachments & Resources</h2>
+            </div>
             
-            <!-- Grid Layout for Features -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                <!-- 🟢 PIOUS GUIDES DIRECTORY CARD -->
-                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                    <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">🟢 Pious Guides Online</h3>
-                    <div id="pious-list" class="space-y-2 max-h-48 overflow-y-auto">
-                        <p class="text-gray-400 text-xs italic">No guides online currently...</p>
-                    </div>
-                </div>
+            <div id="attachments-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <p class="text-gray-400 text-xs italic col-span-2">No attachments published yet.</p>
+            </div>
+        </section>
 
-                <!-- 📂 ATTACHER FILE UPLOAD ENGINE CARD -->
-                <div id="upload-panel" class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                    <h3 class="font-bold text-gray-800 mb-2">📤 Attacher Upload Panel</h3>
-                    <p class="text-xs text-gray-500 mb-3">Only authorized Attachers can submit global resource materials.</p>
-                    <div class="space-y-2">
-                        <input id="upload-title" type="text" placeholder="Document Title (e.g. Hadith Guide)" disabled class="w-full text-xs p-2 border bg-gray-200 rounded-lg cursor-not-allowed">
-                        <input id="upload-url" type="text" placeholder="Google Drive Link URL" disabled class="w-full text-xs p-2 border bg-gray-200 rounded-lg cursor-not-allowed">
-                        <button id="btn-upload" disabled class="w-full bg-gray-400 text-white text-xs font-bold py-2 px-4 rounded-lg cursor-not-allowed transition">
-                            Submit Attachment
-                        </button>
-                    </div>
+        <!-- 🟢 PIOUS GUIDES DIRECTORY (TOP RIGHT CORNER - 1 COL) -->
+        <aside class="space-y-4">
+            <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 sticky top-20">
+                <h3 class="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2">
+                    <span class="h-2 w-2 rounded-full bg-emerald-500"></span> Pious Guides
+                </h3>
+                <div id="pious-list" class="space-y-2.5 max-h-96 overflow-y-auto pr-1">
+                    <p class="text-gray-400 text-xs italic">No active guides online...</p>
                 </div>
             </div>
+        </aside>
 
-            <!-- 📥 VERIFIED PUBLIC ATTACHMENTS DISPLAY -->
-            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                <h3 class="font-bold text-gray-800 mb-3">📚 Verified Attachments & Documentation</h3>
-                <div id="attachments-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-48 overflow-y-auto">
-                    <p class="text-gray-400 text-xs italic col-span-2">No attachments published yet.</p>
+    </main>
+
+    <!-- 📝 Profile Modal -->
+    <div id="profile-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 relative">
+            <button id="btn-close-profile-modal" class="absolute top-4 right-4 text-gray-400 text-lg">&times;</button>
+            <h2 class="text-lg font-bold text-gray-800 mb-1">User Settings</h2>
+            <form id="profile-form" class="space-y-3 mt-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Gender</label>
+                    <select id="user-gender" required class="w-full text-xs p-2.5 border rounded-xl bg-gray-50">
+                        <option value="">-- Select --</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
                 </div>
-            </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Religion / School</label>
+                    <select id="user-religion" required class="w-full text-xs p-2.5 border rounded-xl bg-gray-50">
+                        <option value="">-- Select --</option>
+                        <optgroup label="Islam">
+                            <option value="Islam (Sunnah)">Islam (Sunnah)</option>
+                            <option value="Islam (Shia)">Islam (Shia)</option>
+                            <option value="Islam (Alawi)">Islam (Alawi)</option>
+                            <option value="Islam (Ibadi)">Islam (Ibadi)</option>
+                        </optgroup>
+                        <optgroup label="Other">
+                            <option value="Christianity">Christianity</option>
+                            <option value="Judaism">Judaism</option>
+                            <option value="Buddhism">Buddhism</option>
+                            <option value="Hinduism">Hinduism</option>
+                            <option value="Other / Seeking">Other / Seeking</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Phone / Contact</label>
+                    <input id="user-phone" type="text" placeholder="+60123456789" class="w-full text-xs p-2.5 border rounded-xl bg-gray-50">
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs mt-2">Save Profile</button>
+            </form>
+        </div>
+    </div>
 
+    <!-- 📤 Attacher Upload Modal (Only pops up when ATTACHER button is pressed) -->
+    <div id="attacher-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 relative">
+            <button id="btn-close-attacher-modal" class="absolute top-4 right-4 text-gray-400 text-lg">&times;</button>
+            <h2 class="text-lg font-bold text-gray-800 mb-1">Upload Attachment</h2>
+            <div class="space-y-3 mt-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Title</label>
+                    <input id="upload-title" type="text" placeholder="Title..." class="w-full text-xs p-2.5 border rounded-xl">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">File</label>
+                    <input id="upload-file" type="file" class="w-full text-xs p-1.5 border rounded-xl">
+                </div>
+                <button id="btn-upload" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl text-xs">Publish Attachment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🕌 Pious Modal -->
+    <div id="pious-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 relative">
+            <button id="btn-close-pious-modal" class="absolute top-4 right-4 text-gray-400 text-lg">&times;</button>
+            <h2 class="text-lg font-bold text-emerald-900 mb-1">Pious Guide Settings</h2>
+            <div class="space-y-3 mt-4">
+                <button id="btn-toggle-free-status" class="w-full py-2 rounded-xl text-xs font-bold bg-gray-200 text-gray-700">Free Anytime: OFF</button>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Bio</label>
+                    <textarea id="pious-bio" placeholder="Bio..." class="w-full text-xs p-2.5 border rounded-xl h-16"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Contact Link</label>
+                    <input id="pious-contact" type="text" placeholder="+60123456789" class="w-full text-xs p-2.5 border rounded-xl">
+                </div>
+                <button id="btn-save-pious-folder" class="w-full bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs">Save Settings</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // 🔑 1. Paste your Firebase Configuration here
-  const firebaseConfig = {
-    apiKey: "AIzaSyArDVRPKuZnvd6PSesT-_Tz7-QOGz4yesc",
-    authDomain: "chan-b67fe.firebaseapp.com",
-    projectId: "chan-b67fe",
-    storageBucket: "chan-b67fe.firebasestorage.app",
-    messagingSenderId: "373656065280",
-    appId: "1:373656065280:web:27107c122f1775d6098fe5",
-    measurementId: "G-FZHQK2GPWS"
-  };
-
+        const firebaseConfig = {
+            apiKey: "AIzaSyAMCKIOQz9qjGaH0hacpHQOOolK7zJ4SMI",
+            authDomain: "wa-i-platform.firebaseapp.com",
+            databaseURL: "https://wa-i-platform-default-rtdb.firebaseio.com",
+            projectId: "wa-i-platform",
+            storageBucket: "wa-i-platform.firebasestorage.app",
+            messagingSenderId: "302571737381",
+            appId: "1:302571737381:web:66199076cffeffdac10acc",
+            measurementId: "G-Q69FMH6XB1"
+        };
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const database = firebase.database();
+        const storage = firebase.storage();
 
-        // DOM elements
         const loadingScreen = document.getElementById('loading-screen');
         const loginCard = document.getElementById('login-card');
+        const appHeader = document.getElementById('app-header');
         const appDashboard = document.getElementById('app-dashboard');
-        const btnLogin = document.getElementById('btn-login');
-        const btnLogout = document.getElementById('btn-logout');
-        const userDisplayName = document.getElementById('user-display-name');
-        const userRoleBadge = document.getElementById('user-role-badge');
         
-        // Form DOM Elements
-        const uploadTitle = document.getElementById('upload-title');
-        const uploadUrl = document.getElementById('upload-url');
-        const btnUpload = document.getElementById('btn-upload');
+        const profileModal = document.getElementById('profile-modal');
+        const attacherModal = document.getElementById('attacher-modal');
+        const piousModal = document.getElementById('pious-modal');
 
-        // 🔄 2. Real-Time Authorization Listener
+        let currentUserData = {};
+
         auth.onAuthStateChanged((user) => {
             setTimeout(() => {
-                loadingScreen.classList.add('opacity-0');
-                setTimeout(() => { loadingScreen.style.display = 'none'; }, 500);
-
+                loadingScreen.style.display = 'none';
                 if (user) {
                     loginCard.style.display = 'none';
-                    appDashboard.style.display = 'flex';
-                    userDisplayName.textContent = user.displayName || user.email;
+                    appHeader.classList.remove('hidden');
+                    appDashboard.classList.remove('hidden');
 
                     const userRef = database.ref('users/' + user.uid);
-                    
-                    // Set status to ONLINE in database
                     userRef.child('email').set(user.email);
                     userRef.child('isOnline').set(true);
-                    // Turn off online status automatically if they disconnect/close tab
                     userRef.child('isOnline').onDisconnect().set(false);
 
                     userRef.on('value', (snapshot) => {
-                        const userData = snapshot.val();
-                        const currentRole = (userData && userData.role) ? userData.role : 'guest';
-                        
-                        userRoleBadge.textContent = currentRole;
-                        
-                        // Handle formatting styles based on roles
-                        if (currentRole === 'pious') {
-                            userRoleBadge.className = "text-xs font-semibold bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full mt-2 uppercase tracking-wider";
-                        } else if (currentRole === 'attacher') {
-                            userRoleBadge.className = "text-xs font-semibold bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full mt-2 uppercase tracking-wider";
+                        currentUserData = snapshot.val() || {};
+                        if (!currentUserData.gender || !currentUserData.religion) {
+                            profileModal.classList.remove('hidden');
                         } else {
-                            userRoleBadge.className = "text-xs font-semibold bg-gray-200 text-gray-700 px-2.5 py-1 rounded-full mt-2 uppercase tracking-wider";
-                        }
-
-                        // Unlock features if role is Attacher
-                        if (currentRole === 'attacher') {
-                            uploadTitle.disabled = false; uploadTitle.className = "w-full text-xs p-2 border bg-white text-gray-800 rounded-lg";
-                            uploadUrl.disabled = false; uploadUrl.className = "w-full text-xs p-2 border bg-white text-gray-800 rounded-lg";
-                            btnUpload.disabled = false; btnUpload.className = "w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 px-4 rounded-lg cursor-pointer transition";
-                        } else {
-                            uploadTitle.disabled = true; uploadTitle.className = "w-full text-xs p-2 border bg-gray-200 rounded-lg cursor-not-allowed";
-                            uploadUrl.disabled = true; uploadUrl.className = "w-full text-xs p-2 border bg-gray-200 rounded-lg cursor-not-allowed";
-                            btnUpload.disabled = true; btnUpload.className = "w-full bg-gray-400 text-white text-xs font-bold py-2 px-4 rounded-lg cursor-not-allowed";
+                            renderRoleBadges(currentUserData);
                         }
                     });
-
                 } else {
-                    appDashboard.style.display = 'none';
+                    appHeader.classList.add('hidden');
+                    appDashboard.classList.add('hidden');
                     loginCard.style.display = 'flex';
                 }
-            }, 2500); 
+            }, 500);
         });
 
-        // 📢 3. Submit Attachment Logic (For Attachers)
-        btnUpload.addEventListener('click', () => {
-            const title = uploadTitle.value.trim();
-            const url = uploadUrl.value.trim();
-            
-            if(title === "" || url === "") {
-                alert("Please fill out both the document title and reference URL link.");
-                return;
+        function renderRoleBadges(data) {
+            const container = document.getElementById('user-badges-container');
+            container.innerHTML = "";
+
+            if (data.isPious) {
+                const btnPious = document.createElement('button');
+                btnPious.className = "text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full uppercase";
+                btnPious.textContent = "PIOUS";
+                btnPious.onclick = () => piousModal.classList.remove('hidden');
+                container.appendChild(btnPious);
             }
 
-            database.ref('attachments').push({
-                title: title,
-                url: url,
-                uploader: auth.currentUser.email
-            }).then(() => {
-                uploadTitle.value = "";
-                uploadUrl.value = "";
-                alert("Attachment published to the ecosystem successfully!");
-            });
-        });
+            if (data.isAttacher) {
+                const btnAttacher = document.createElement('button');
+                btnAttacher.className = "text-[10px] font-bold bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full uppercase";
+                btnAttacher.textContent = "ATTACHER";
+                btnAttacher.onclick = () => attacherModal.classList.remove('hidden');
+                container.appendChild(btnAttacher);
+            }
+        }
 
-        // 📜 4. Sync and Read Verified Attachments Realtime
+        document.getElementById('btn-open-profile').onclick = () => {
+            document.getElementById('user-gender').value = currentUserData.gender || "";
+            document.getElementById('user-religion').value = currentUserData.religion || "";
+            document.getElementById('user-phone').value = currentUserData.phone || "";
+            profileModal.classList.remove('hidden');
+        };
+
+        document.getElementById('profile-form').onsubmit = (e) => {
+            e.preventDefault();
+            database.ref('users/' + auth.currentUser.uid).update({
+                gender: document.getElementById('user-gender').value,
+                religion: document.getElementById('user-religion').value,
+                phone: document.getElementById('user-phone').value.trim()
+            }).then(() => profileModal.classList.add('hidden'));
+        };
+
+        document.getElementById('btn-close-profile-modal').onclick = () => profileModal.classList.add('hidden');
+        document.getElementById('btn-close-attacher-modal').onclick = () => attacherModal.classList.add('hidden');
+        document.getElementById('btn-close-pious-modal').onclick = () => piousModal.classList.add('hidden');
+
+        document.getElementById('btn-upload').onclick = () => {
+            const title = document.getElementById('upload-title').value.trim();
+            const file = document.getElementById('upload-file').files[0];
+            if (!title || !file) return alert("Select file and title.");
+
+            const ref = storage.ref('attachments/' + Date.now() + '_' + file.name);
+            ref.put(file).then(s => s.ref.getDownloadURL()).then(url => {
+                database.ref('attachments').push({ title, url, uploader: auth.currentUser.email });
+                attacherModal.classList.add('hidden');
+            });
+        };
+
         database.ref('attachments').on('value', (snapshot) => {
             const container = document.getElementById('attachments-container');
             container.innerHTML = "";
             const data = snapshot.val();
-            if(!data) {
-                container.innerHTML = `<p class="text-gray-400 text-xs italic col-span-2">No attachments published yet.</p>`;
-                return;
-            }
-            Object.keys(data).forEach((key) => {
-                const item = data[key];
-                const card = document.createElement('a');
-                card.href = item.url;
-                card.target = "_blank";
-                card.className = "p-3 bg-white border border-gray-200 hover:border-emerald-500 rounded-xl transition flex flex-col justify-between shadow-sm hover:shadow-md cursor-pointer";
-                card.innerHTML = `
-                    <h4 class="font-bold text-gray-800 text-sm truncate">${item.title}</h4>
-                    <span class="text-[10px] text-gray-400 mt-2 truncate">Uploaded by: ${item.uploader}</span>
+            if (!data) return container.innerHTML = `<p class="text-gray-400 text-xs italic">No attachments yet.</p>`;
+
+            Object.keys(data).forEach(k => {
+                const item = data[k];
+                container.innerHTML += `
+                    <a href="${item.url}" target="_blank" class="p-4 bg-white border border-gray-200 rounded-2xl hover:border-emerald-500 transition shadow-sm block">
+                        <h4 class="font-bold text-gray-800 text-sm mb-1">${item.title}</h4>
+                        <p class="text-[10px] text-gray-400">By: ${item.uploader}</p>
+                    </a>
                 `;
-                container.appendChild(card);
             });
         });
 
-        // 🟢 5. Sync and Filter Pious Guides Dynamic List (Online / Offline Status)
         database.ref('users').on('value', (snapshot) => {
-            const listContainer = document.getElementById('pious-list');
-            listContainer.innerHTML = "";
-            const usersData = snapshot.val();
-            let piousCount = 0;
+            const container = document.getElementById('pious-list');
+            container.innerHTML = "";
+            const users = snapshot.val() || {};
+            let count = 0;
 
-            if (usersData) {
-                Object.keys(usersData).forEach((id) => {
-                    const user = usersData[id];
-                    if (user.role === 'pious') {
-                        piousCount++;
-                        const element = document.createElement('div');
-                        element.className = "flex items-center justify-between p-2 bg-white rounded-lg border border-gray-100 text-xs";
-                        
-                        const statusDot = user.isOnline 
-                            ? `<span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>` 
-                            : `<span class="h-2 w-2 rounded-full bg-gray-400"></span>`;
-
-                        element.innerHTML = `
-                            <div class="flex items-center gap-2 font-medium text-gray-700 truncate max-w-[70%]">
-                                ${statusDot}
-                                <span class="truncate">${user.email}</span>
+            Object.keys(users).forEach(id => {
+                const u = users[id];
+                if (u.isPious && u.piousFolder) {
+                    count++;
+                    const isFree = u.isOnline && u.piousFolder.isFreeAnytime;
+                    const dotClass = isFree ? "bg-amber-500" : (u.isOnline ? "bg-emerald-500" : "bg-gray-300");
+                    container.innerHTML += `
+                        <div class="p-3 bg-white rounded-xl border text-xs">
+                            <div class="flex justify-between items-center font-bold text-gray-800 mb-1">
+                                <span class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-full ${dotClass}"></span>${u.email.split('@')[0]}</span>
+                                ${isFree ? '<span class="text-[9px] bg-amber-100 text-amber-800 px-1 rounded">FREE</span>' : ''}
                             </div>
-                            <span class="text-[10px] font-bold ${user.isOnline ? 'text-emerald-600' : 'text-gray-400'}">
-                                ${user.isOnline ? 'ONLINE' : 'OFFLINE'}
-                            </span>
-                        `;
-                        listContainer.appendChild(element);
-                    }
-                });
-            }
-
-            if(piousCount === 0) {
-                listContainer.innerHTML = `<p class="text-gray-400 text-xs italic">No guides online currently...</p>`;
-            }
+                            <p class="text-gray-500 text-[11px] mb-2">${u.piousFolder.bio || ''}</p>
+                            ${u.piousFolder.contact ? `<a href="https://wa.me/${u.piousFolder.contact.replace(/\+/g, '')}" target="_blank" class="text-[10px] text-emerald-700 font-bold underline">Contact Guide</a>` : ''}
+                        </div>
+                    `;
+                }
+            });
+            if (!count) container.innerHTML = `<p class="text-gray-400 text-xs italic">No guides listed.</p>`;
         });
 
-        // 🌐 Login/Logout Click Triggers
-        btnLogin.addEventListener('click', () => {
-            auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-        });
-
-        btnLogout.addEventListener('click', () => {
-            if(auth.currentUser) {
-                database.ref('users/' + auth.currentUser.uid + '/isOnline').set(false).then(() => {
-                    auth.signOut();
-                });
-            }
-        });
+        document.getElementById('btn-logout').onclick = () => auth.signOut();
+        document.getElementById('btn-login').onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
     </script>
 </body>
 </html>
