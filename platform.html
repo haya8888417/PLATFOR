@@ -3,341 +3,358 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wa'i Platform</title>
-    <!-- 🖼️ Browser Tab Favicon -->
+    <title>Wa'i Platform - Islamic Guidance & Resources</title>
     <link rel="icon" type="image/png" href="logo.png">
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+    <!-- International Phone Input CSS & JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.12/build/css/intlTelInput.css">
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.12/build/js/intlTelInput.min.js"></script>
+<style>
+    .custom-bg-mosque {
+        /* Adds a dark overlay so your text stays easily readable over the picture */
+        background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.80), rgba(15, 23, 42, 0.92)), 
+                          url('background.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+</style>
 </head>
-<body class="bg-white text-gray-900 font-sans min-h-screen flex flex-col">
+<body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen flex flex-col pb-16 md:pb-0">
 
-    <!-- ⏳ Loading Screen -->
-    <div id="loading-screen" class="fixed inset-0 bg-white flex flex-col items-center justify-center z-50 transition-opacity duration-500">
-        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-600 mb-3"></div>
-        <p class="text-xs text-gray-500 font-medium animate-pulse">Loading Platform...</p>
-    </div>
-
-    <!-- 🔐 Sign-In Box -->
-    <div id="login-card" class="hidden fixed inset-0 bg-white flex flex-col items-center justify-center p-4 z-40">
-        <div class="max-w-sm w-full text-center">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Wa'i Platform</h1>
-            <p class="text-xs text-gray-500 mb-6">Connect, share attachments, and seek verified guidance.</p>
-            <button id="btn-login" class="w-full flex items-center justify-center gap-3 bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 px-4 rounded-xl transition shadow-md text-sm">
-                Sign In with Google
-            </button>
-        </div>
-    </div>
-
-    <!-- 🔝 TOP NAVBAR HEADER -->
-    <header id="app-header" class="hidden sticky top-0 bg-white border-b border-gray-100 z-30 px-4 py-2 flex items-center justify-between shadow-sm">
-        <div class="flex items-center gap-3">
-            <!-- 🖼️ Header Logo Image + Text -->
-            <div class="flex items-center gap-2">
-                <img src="logo.png" alt="Wa'i Platform Logo" class="h-9 w-9 object-contain rounded-full shadow-sm">
-                <h1 class="text-xl font-extrabold text-emerald-800 tracking-tight">Wa'i</h1>
+    <!-- ==================== LANDING / AUTH VIEW ==================== -->
+    <div id="view-landing" class="flex-1 flex flex-col custom-bg-mosque text-white min-h-screen">
+        <header class="p-6 flex justify-between items-center border-b border-slate-800/60 backdrop-blur-md">
+            <div class="flex items-center gap-3">
+                <img src="logo.png" alt="Wa'i Logo" class="h-10 w-10 object-contain rounded-full bg-white p-0.5">
+                <span class="font-extrabold text-xl tracking-tight text-white">Wa'i Platform</span>
             </div>
-            <div id="user-badges-container" class="flex gap-1.5 items-center ml-2"></div>
-        </div>
+        </header>
 
-        <div class="flex items-center gap-2">
-            <button id="btn-open-profile" title="Profile Settings" class="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-            </button>
-            <button id="btn-logout" class="text-xs font-semibold text-red-500 hover:text-red-700 px-2 py-1">Log Out</button>
-        </div>
-    </header>
+        <section class="flex-1 flex items-center justify-center p-6 text-center">
+            <div class="max-w-xl space-y-6">
+                <span class="px-3 py-1 bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 rounded-full text-xs font-bold tracking-wider uppercase">
+                    Authentic Islamic Knowledge & Community
+                </span>
+                <h1 class="text-4xl md:text-5xl font-black leading-tight">Welcome to Wa'i</h1>
+                <p class="text-slate-300 text-base md:text-lg">
+                    Access verified Islamic resources, consult registered Pious guides, and stay connected with local prayer schedules.
+                </p>
 
-    <!-- 🌐 MAIN CONTAINER -->
-    <main id="app-dashboard" class="hidden flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <!-- 📸 ATTACHMENTS FEED -->
-        <section class="lg:col-span-2 space-y-4">
-            <div class="border-b pb-2 flex justify-between items-center">
-                <h2 class="text-sm font-bold uppercase tracking-wider text-gray-500">Shared Attachments & Resources</h2>
-            </div>
-            
-            <div id="attachments-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <p class="text-gray-400 text-xs italic col-span-2">No attachments published yet.</p>
+                <div class="bg-slate-900/80 p-6 rounded-2xl border border-slate-700/80 shadow-2xl backdrop-blur space-y-4 max-w-md mx-auto">
+                    <p class="text-xs font-bold text-slate-400 uppercase">Sign in to enter</p>
+                    <button id="btn-login-google" class="w-full flex items-center justify-center gap-3 bg-white text-slate-800 hover:bg-slate-100 font-bold py-3 px-4 rounded-xl transition text-sm shadow">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+                        Continue with Google
+                    </button>
+                </div>
             </div>
         </section>
-
-        <!-- 🟢 PIOUS GUIDES DIRECTORY -->
-        <aside class="space-y-4">
-            <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 sticky top-20">
-                <h3 class="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2">
-                    <span class="h-2 w-2 rounded-full bg-emerald-500"></span> Pious Guides
-                </h3>
-                <div id="pious-list" class="space-y-2.5 max-h-96 overflow-y-auto pr-1">
-                    <p class="text-gray-400 text-xs italic">No active guides online...</p>
-                </div>
-            </div>
-        </aside>
-
-    </main>
-
-    <!-- 📝 Profile Modal -->
-    <div id="profile-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 relative">
-            <button id="btn-close-profile-modal" class="absolute top-4 right-4 text-gray-400 text-lg">&times;</button>
-            <h2 class="text-lg font-bold text-gray-800 mb-1">User Settings</h2>
-            <form id="profile-form" class="space-y-3 mt-4">
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Gender</label>
-                    <select id="user-gender" required class="w-full text-xs p-2.5 border rounded-xl bg-gray-50">
-                        <option value="">-- Select --</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Phone / WhatsApp Contact</label>
-                    <input id="user-phone" type="text" placeholder="+60... or +1..." class="w-full text-xs p-2.5 border rounded-xl bg-gray-50">
-                </div>
-                <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs mt-2">Save Profile</button>
-            </form>
-        </div>
     </div>
 
-    <!-- 📤 Attacher Upload Modal -->
-    <div id="attacher-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 relative">
-            <button id="btn-close-attacher-modal" class="absolute top-4 right-4 text-gray-400 text-lg">&times;</button>
-            <h2 class="text-lg font-bold text-gray-800 mb-1">Upload Attachment</h2>
-            <div class="space-y-3 mt-4">
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Title</label>
-                    <input id="upload-title" type="text" placeholder="Title..." class="w-full text-xs p-2.5 border rounded-xl">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">File</label>
-                    <input id="upload-file" type="file" class="w-full text-xs p-1.5 border rounded-xl">
-                </div>
-                <button id="btn-upload" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl text-xs">Publish Attachment</button>
+    <!-- ==================== MAIN DASHBOARD VIEW ==================== -->
+    <div id="view-dashboard" class="hidden flex-1 flex flex-col min-h-screen">
+        
+        <!-- Desktop / Mobile Top Nav -->
+        <header class="bg-slate-900 text-white px-6 py-3.5 flex justify-between items-center sticky top-0 z-40 shadow-md">
+            <div class="flex items-center gap-3">
+                <img src="logo.png" alt="Wa'i Logo" class="h-8 w-8 object-contain rounded-full bg-white p-0.5">
+                <span class="font-extrabold text-lg tracking-tight">Wa'i</span>
+                <div id="user-badges-container" class="flex gap-1.5 ml-2"></div>
+            </div>
+
+            <!-- Desktop Navigation Links -->
+            <nav class="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-300">
+                <button onclick="switchTab('feed')" class="hover:text-emerald-400 transition tab-btn" id="nav-feed">Feed</button>
+                <button onclick="switchTab('pious')" class="hover:text-emerald-400 transition tab-btn" id="nav-pious">Pious Guides</button>
+                <button onclick="switchTab('learn')" class="hover:text-emerald-400 transition tab-btn" id="nav-learn">Learn More</button>
+                <button onclick="switchTab('profile')" class="hover:text-emerald-400 transition tab-btn" id="nav-profile">Profile</button>
+            </nav>
+
+            <button id="btn-logout" class="text-xs font-bold text-red-400 hover:text-red-300 bg-red-950/50 border border-red-800 px-3 py-1.5 rounded-lg transition">
+                Log Out
+            </button>
+        </header>
+
+        <!-- Dynamic Prayer Bar (Can be toggled) -->
+        <div id="prayer-banner" class="bg-emerald-900 text-emerald-100 px-6 py-3 text-xs flex flex-wrap justify-between items-center border-b border-emerald-800 shadow-inner">
+            <div class="flex items-center gap-2 font-bold">
+                <span>🕌 Prayer Times (Local):</span>
+                <span id="prayer-next-countdown" class="text-amber-300 bg-emerald-950 px-2 py-0.5 rounded">Calculating...</span>
+            </div>
+            <div id="prayer-list" class="flex gap-3 md:gap-6 font-medium text-slate-200 mt-1 md:mt-0 overflow-x-auto">
+                <div>Fajr: <span id="t-fajr" class="font-bold text-white">--:--</span></div>
+                <div>Dhuhr: <span id="t-dhuhr" class="font-bold text-white">--:--</span></div>
+                <div>Asr: <span id="t-asr" class="font-bold text-white">--:--</span></div>
+                <div>Maghrib: <span id="t-maghrib" class="font-bold text-white">--:--</span></div>
+                <div>Isha: <span id="t-isha" class="font-bold text-white">--:--</span></div>
             </div>
         </div>
-    </div>
 
-    <!-- 🕌 Pious Modal -->
-    <div id="pious-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 relative">
-            <button id="btn-close-pious-modal" class="absolute top-4 right-4 text-gray-400 text-lg">&times;</button>
-            <h2 class="text-lg font-bold text-emerald-900 mb-1">Pious Guide Settings</h2>
-            <div class="space-y-3 mt-4">
-                <button id="btn-toggle-free-status" type="button" class="w-full py-2 rounded-xl text-xs font-bold transition">Free Anytime: OFF</button>
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Bio</label>
-                    <textarea id="pious-bio" placeholder="Bio..." class="w-full text-xs p-2.5 border rounded-xl h-16"></textarea>
+        <!-- APP PAGES (TABS) -->
+        <main class="max-w-5xl mx-auto w-full p-6 flex-1">
+            
+            <!-- PAGE 1: FEED -->
+            <div id="page-feed" class="space-y-6">
+                <!-- Attacher Upload Panel -->
+                <div id="attacher-upload-box" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">📤 Upload New Resource</h3>
+                    <div class="space-y-3">
+                        <input id="upload-title" type="text" placeholder="Document / Resource title..." class="w-full border border-slate-200 rounded-xl px-4 py-2 text-sm">
+                        <input id="upload-file" type="file" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white">
+                        <button id="btn-upload-submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-sm transition">Publish</button>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">WhatsApp Contact Number</label>
-                    <input id="pious-contact" type="text" placeholder="e.g. +60123456789 or +123456789" class="w-full text-xs p-2.5 border rounded-xl">
+
+                <div class="space-y-3">
+                    <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Resource Feed</h2>
+                    <div id="attachments-feed" class="space-y-3"></div>
                 </div>
-                <button id="btn-save-pious-folder" class="w-full bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs">Save Settings</button>
             </div>
+
+            <!-- PAGE 2: PIOUS GUIDES -->
+            <div id="page-pious" class="hidden space-y-4">
+                <div class="space-y-1">
+                    <h2 class="text-xl font-bold text-slate-800">Pious Guides Directory</h2>
+                    <p class="text-slate-500 text-sm">Reach out directly to verified guides for Islamic advice.</p>
+                </div>
+                <div id="pious-directory" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <!-- PAGE 3: LEARN MORE -->
+            <div id="page-learn" class="hidden space-y-6">
+                <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h2 class="text-2xl font-extrabold text-slate-800">About Wa'i Platform</h2>
+                    <p class="text-slate-600 leading-relaxed text-sm">
+                        Wa'i Platform is engineered to bridge authentic Islamic knowledge with everyday modern accessibility. It connects community members directly with verified scholars and guides while serving as a secure hub for educational attachments.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t">
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                            <span class="text-2xl">📖</span>
+                            <h4 class="font-bold text-slate-800 mt-2 text-sm">Verified Files</h4>
+                            <p class="text-xs text-slate-500 mt-1">Attachments are published exclusively by approved attachers.</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                            <span class="text-2xl">🤝</span>
+                            <h4 class="font-bold text-slate-800 mt-2 text-sm">Direct Contact</h4>
+                            <p class="text-xs text-slate-500 mt-1">Seamless 1-on-1 contact with available guides via WhatsApp.</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                            <span class="text-2xl">⚡</span>
+                            <h4 class="font-bold text-slate-800 mt-2 text-sm">Smart Tools</h4>
+                            <p class="text-xs text-slate-500 mt-1">Built-in local prayer calculations and role permissions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE 4: PROFILE & SETTINGS -->
+            <div id="page-profile" class="hidden space-y-6">
+    <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6 max-w-xl mx-auto">
+        <h2 class="text-xl font-extrabold text-slate-800 border-b pb-3">Edit Profile</h2>
+        
+        <div class="space-y-5">
+            <!-- Profile Picture Section -->
+            <div class="flex items-center gap-4">
+                <img id="profile-avatar-preview" src="https://via.placeholder.com/150" alt="Avatar" class="w-20 h-20 rounded-full object-cover border-2 border-emerald-500 shadow">
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-slate-500 uppercase">Profile Photo</label>
+                    <input id="input-avatar-file" type="file" accept="image/*" class="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                </div>
+            </div>
+
+            <!-- Full Name -->
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Full Name</label>
+                <input id="input-display-name" type="text" placeholder="Your name..." class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-500">
+            </div>
+
+            <!-- Smart Malaysian Phone Input -->
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">WhatsApp Contact Number</label>
+                <div class="w-full">
+                    <input id="input-phone" type="tel" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+                </div>
+                <span id="phone-validation-msg" class="text-[11px] text-slate-400 mt-1 block">Formats automatically for Malaysia (+60)</span>
+            </div>
+
+            <!-- Bio / Description -->
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">About / Bio</label>
+                <textarea id="input-bio" rows="3" placeholder="Share a short intro or areas of knowledge..." class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-500"></textarea>
+            </div>
+
+            <!-- Save Action -->
+            <button id="btn-save-profile" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-sm transition shadow-md">
+                Save Changes
+            </button>
         </div>
     </div>
+</div>
 
+        </main>
+
+        <!-- Mobile Bottom Navigation Bar -->
+        <nav class="md:hidden fixed bottom-0 inset-x-0 bg-slate-900 border-t border-slate-800 flex justify-around py-3 text-slate-400 text-[10px] font-bold z-50">
+            <button onclick="switchTab('feed')" class="flex flex-col items-center gap-1 hover:text-emerald-400"><span>🏠</span>Feed</button>
+            <button onclick="switchTab('pious')" class="flex flex-col items-center gap-1 hover:text-emerald-400"><span>🤝</span>Guides</button>
+            <button onclick="switchTab('learn')" class="flex flex-col items-center gap-1 hover:text-emerald-400"><span>📖</span>Learn</button>
+            <button onclick="switchTab('profile')" class="flex flex-col items-center gap-1 hover:text-emerald-400"><span>👤</span>Profile</button>
+        </nav>
+    </div>
+
+    <!-- JS Logic -->
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAMCKIOQz9qjGaH0hacpHQOOolK7zJ4SMI",
-            authDomain: "wa-i-platform.firebaseapp.com",
-            databaseURL: "https://wa-i-platform-default-rtdb.firebaseio.com",
-            projectId: "wa-i-platform",
-            storageBucket: "wa-i-platform.firebasestorage.app",
-            messagingSenderId: "302571737381",
-            appId: "1:302571737381:web:66199076cffeffdac10acc",
-            measurementId: "G-Q69FMH6XB1"
-        };
-
+        // FIREBASE CONFIG
+       const firebaseConfig = {
+    apiKey: "AIzaSyAMCKIOQz9qjGaH0hacpHQOOolK7zJ4SMI",
+    authDomain: "wa-i-platform.firebaseapp.com",
+    databaseURL: "https://wa-i-platform-default-rtdb.firebaseio.com",
+    projectId: "wa-i-platform",
+    storageBucket: "wa-i-platform.firebasestorage.app",
+    messagingSenderId: "302571737381",
+    appId: "1:302571737381:web:66199076cffeffdac10acc",
+    measurementId: "G-Q69FMH6XB1"
+  };
         firebase.initializeApp(firebaseConfig);
+
         const auth = firebase.auth();
-        const database = firebase.database();
+        const db = firebase.database();
         const storage = firebase.storage();
 
-        const loadingScreen = document.getElementById('loading-screen');
-        const loginCard = document.getElementById('login-card');
-        const appHeader = document.getElementById('app-header');
-        const appDashboard = document.getElementById('app-dashboard');
-        
-        const profileModal = document.getElementById('profile-modal');
-        const attacherModal = document.getElementById('attacher-modal');
-        const piousModal = document.getElementById('pious-modal');
-        const btnToggleFree = document.getElementById('btn-toggle-free-status');
+        let currentUser = null;
 
-        let currentUserData = {};
-        let isFreeAnytimeState = false;
-
-        auth.onAuthStateChanged((user) => {
-            setTimeout(() => {
-                loadingScreen.style.display = 'none';
-                if (user) {
-                    loginCard.style.display = 'none';
-                    appHeader.classList.remove('hidden');
-                    appDashboard.classList.remove('hidden');
-
-                    const userRef = database.ref('users/' + user.uid);
-                    userRef.child('email').set(user.email);
-                    userRef.child('isOnline').set(true);
-                    userRef.child('isOnline').onDisconnect().set(false);
-
-                    userRef.on('value', (snapshot) => {
-                        currentUserData = snapshot.val() || {};
-                        
-                        if (currentUserData.piousFolder) {
-                            isFreeAnytimeState = !!currentUserData.piousFolder.isFreeAnytime;
-                            updateFreeButtonUI();
-                            document.getElementById('pious-bio').value = currentUserData.piousFolder.bio || '';
-                            document.getElementById('pious-contact').value = currentUserData.piousFolder.contact || '';
-                        }
-
-                        if (!currentUserData.gender) {
-                            profileModal.classList.remove('hidden');
-                        } else {
-                            renderRoleBadges(currentUserData);
-                        }
-                    });
-                } else {
-                    appHeader.classList.add('hidden');
-                    appDashboard.classList.add('hidden');
-                    loginCard.style.display = 'flex';
-                }
-            }, 500);
+        // AUTH HANDLERS
+        document.getElementById('btn-login-google').addEventListener('click', () => {
+            auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
         });
+        document.getElementById('btn-logout').addEventListener('click', () => auth.signOut());
 
-        function renderRoleBadges(data) {
-            const container = document.getElementById('user-badges-container');
-            container.innerHTML = "";
-
-            if (data.isPious) {
-                const btnPious = document.createElement('button');
-                btnPious.className = "text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full uppercase";
-                btnPious.textContent = "PIOUS";
-                btnPious.onclick = () => piousModal.classList.remove('hidden');
-                container.appendChild(btnPious);
-            }
-
-            if (data.isAttacher) {
-                const btnAttacher = document.createElement('button');
-                btnAttacher.className = "text-[10px] font-bold bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full uppercase";
-                btnAttacher.textContent = "ATTACHER";
-                btnAttacher.onclick = () => attacherModal.classList.remove('hidden');
-                container.appendChild(btnAttacher);
-            }
-        }
-
-        function updateFreeButtonUI() {
-            if (isFreeAnytimeState) {
-                btnToggleFree.textContent = "Free Anytime: ON";
-                btnToggleFree.className = "w-full py-2 rounded-xl text-xs font-bold bg-amber-500 text-white transition";
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('view-landing').classList.add('hidden');
+                document.getElementById('view-dashboard').classList.remove('hidden');
+                loadUserData(user);
+                fetchPrayerTimes();
+                listenToFeed();
+                listenToPious();
             } else {
-                btnToggleFree.textContent = "Free Anytime: OFF";
-                btnToggleFree.className = "w-full py-2 rounded-xl text-xs font-bold bg-gray-200 text-gray-700 transition";
+                document.getElementById('view-landing').classList.remove('hidden');
+                document.getElementById('view-dashboard').classList.add('hidden');
+            }
+        });
+
+        // TAB SWITCHER
+        function switchTab(tab) {
+            ['feed', 'pious', 'learn', 'profile'].forEach(t => {
+                document.getElementById(`page-${t}`).classList.add('hidden');
+            });
+            document.getElementById(`page-${tab}`).classList.remove('hidden');
+        }
+
+        // PRAYER TIMES API INTEGRATION
+        function fetchPrayerTimes() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`)
+                        .then(res => res.json())
+                        .then(data => {
+                            const t = data.data.timings;
+                            document.getElementById('t-fajr').innerText = t.Fajr;
+                            document.getElementById('t-dhuhr').innerText = t.Dhuhr;
+                            document.getElementById('t-asr').innerText = t.Asr;
+                            document.getElementById('t-maghrib').innerText = t.Maghrib;
+                            document.getElementById('t-isha').innerText = t.Isha;
+                            document.getElementById('prayer-next-countdown').innerText = "Live Schedule Active";
+                        }).catch(() => {
+                            document.getElementById('prayer-next-countdown').innerText = "Location Error";
+                        });
+                });
             }
         }
 
-        btnToggleFree.onclick = () => {
-            isFreeAnytimeState = !isFreeAnytimeState;
-            updateFreeButtonUI();
-        };
-
-        document.getElementById('btn-save-pious-folder').onclick = () => {
-            const bio = document.getElementById('pious-bio').value.trim();
-            const contact = document.getElementById('pious-contact').value.trim();
-
-            database.ref('users/' + auth.currentUser.uid + '/piousFolder').set({
-                isFreeAnytime: isFreeAnytimeState,
-                bio: bio,
-                contact: contact
-            }).then(() => piousModal.classList.add('hidden'));
-        };
-
-        document.getElementById('btn-open-profile').onclick = () => {
-            document.getElementById('user-gender').value = currentUserData.gender || "";
-            document.getElementById('user-phone').value = currentUserData.phone || "";
-            profileModal.classList.remove('hidden');
-        };
-
-        document.getElementById('profile-form').onsubmit = (e) => {
-            e.preventDefault();
-            database.ref('users/' + auth.currentUser.uid).update({
-                gender: document.getElementById('user-gender').value,
-                phone: document.getElementById('user-phone').value.trim()
-            }).then(() => profileModal.classList.add('hidden'));
-        };
-
-        document.getElementById('btn-close-profile-modal').onclick = () => profileModal.classList.add('hidden');
-        document.getElementById('btn-close-attacher-modal').onclick = () => attacherModal.classList.add('hidden');
-        document.getElementById('btn-close-pious-modal').onclick = () => piousModal.classList.add('hidden');
-
-        document.getElementById('btn-upload').onclick = () => {
-            const title = document.getElementById('upload-title').value.trim();
-            const file = document.getElementById('upload-file').files[0];
-            if (!title || !file) return alert("Select file and title.");
-
-            const ref = storage.ref('attachments/' + Date.now() + '_' + file.name);
-            ref.put(file).then(s => s.ref.getDownloadURL()).then(url => {
-                database.ref('attachments').push({ title, url, uploader: auth.currentUser.email });
-                attacherModal.classList.add('hidden');
-            });
-        };
-
-        database.ref('attachments').on('value', (snapshot) => {
-            const container = document.getElementById('attachments-container');
-            container.innerHTML = "";
-            const data = snapshot.val();
-            if (!data) return container.innerHTML = `<p class="text-gray-400 text-xs italic">No attachments yet.</p>`;
-
-            Object.keys(data).forEach(k => {
-                const item = data[k];
-                container.innerHTML += `
-                    <a href="${item.url}" target="_blank" class="p-4 bg-white border border-gray-200 rounded-2xl hover:border-emerald-500 transition shadow-sm block">
-                        <h4 class="font-bold text-gray-800 text-sm mb-1">${item.title}</h4>
-                        <p class="text-[10px] text-gray-400">By: ${item.uploader}</p>
-                    </a>
-                `;
-            });
+        // TOGGLE PRAYER BANNER VISIBILITY
+        document.getElementById('toggle-prayer-banner').addEventListener('change', (e) => {
+            if(e.target.checked) {
+                document.getElementById('prayer-banner').classList.remove('hidden');
+            } else {
+                document.getElementById('prayer-banner').classList.add('hidden');
+            }
         });
 
-        database.ref('users').on('value', (snapshot) => {
-            const container = document.getElementById('pious-list');
-            container.innerHTML = "";
-            const users = snapshot.val() || {};
-            let count = 0;
-
-            Object.keys(users).forEach(id => {
-                const u = users[id];
-                if (u.isPious && u.piousFolder) {
-                    count++;
-                    const isOnline = !!u.isOnline;
-                    const isFreeAnytime = !!u.piousFolder.isFreeAnytime;
-                    
-                    // Contact via WhatsApp is only permitted when guide is Online AND Free Anytime is ON
-                    const canContact = isOnline && isFreeAnytime;
-                    
-                    const dotClass = isFreeAnytime ? "bg-amber-500" : (isOnline ? "bg-emerald-500" : "bg-gray-300");
-                    const rawPhone = u.piousFolder.contact ? u.piousFolder.contact.replace(/[^\d]/g, '') : '';
-
-                    container.innerHTML += `
-                        <div class="p-3 bg-white rounded-xl border text-xs">
-                            <div class="flex justify-between items-center font-bold text-gray-800 mb-1">
-                                <span class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-full ${dotClass}"></span>${u.email.split('@')[0]}</span>
-                                ${isFreeAnytime ? '<span class="text-[9px] bg-amber-100 text-amber-800 px-1 rounded">FREE</span>' : ''}
-                            </div>
-                            <p class="text-gray-500 text-[11px] mb-2">${u.piousFolder.bio || ''}</p>
-                            ${canContact && rawPhone ? `<a href="https://wa.me/${rawPhone}" target="_blank" class="text-[10px] text-emerald-700 font-bold underline">Contact Guide</a>` : `<span class="text-[10px] text-gray-400 italic">Guide Unavailable</span>`}
-                        </div>
-                    `;
+        // LOAD USER & PROFILE
+        function loadUserData(user) {
+            db.ref('users/' + user.uid).on('value', snap => {
+                const data = snap.val() || {};
+                if (data.isAttacher || data.isAdmin) {
+                    document.getElementById('attacher-upload-box').classList.remove('hidden');
                 }
+                document.getElementById('input-phone').value = data.phone || '';
+                document.getElementById('input-bio').value = data.bio || '';
             });
-            if (!count) container.innerHTML = `<p class="text-gray-400 text-xs italic">No guides listed.</p>`;
+        }
+
+        document.getElementById('btn-save-profile').addEventListener('click', () => {
+            if (!currentUser) return;
+            db.ref('users/' + currentUser.uid).update({
+                phone: document.getElementById('input-phone').value,
+                bio: document.getElementById('input-bio').value
+            }).then(() => alert('Profile saved!'));
         });
 
-        document.getElementById('btn-logout').onclick = () => auth.signOut();
-        document.getElementById('btn-login').onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+        // FEED & DIRECTORY LISTENERS
+        function listenToFeed() {
+            db.ref('attachments').on('value', snap => {
+                const feed = document.getElementById('attachments-feed');
+                feed.innerHTML = '';
+                if (!snap.exists()) {
+                    feed.innerHTML = `<div class="p-6 text-center text-slate-400 bg-white rounded-2xl border text-sm">No attachments shared yet.</div>`;
+                    return;
+                }
+                snap.forEach(c => {
+                    const item = c.val();
+                    feed.innerHTML = `
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 flex justify-between items-center">
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm">${item.title}</h4>
+                                <p class="text-xs text-slate-400">By ${item.uploadedBy}</p>
+                            </div>
+                            <a href="${item.fileUrl}" target="_blank" class="bg-emerald-50 text-emerald-700 font-bold text-xs px-3 py-2 rounded-lg border border-emerald-200">Download</a>
+                        </div>
+                    ` + feed.innerHTML;
+                });
+            });
+        }
+
+        function listenToPious() {
+            db.ref('users').on('value', snap => {
+                const dir = document.getElementById('pious-directory');
+                dir.innerHTML = '';
+                snap.forEach(c => {
+                    const u = c.val();
+                    if (u.isPious) {
+                        dir.innerHTML += `
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200 space-y-2">
+                                <h4 class="font-bold text-slate-800 text-sm">${u.name}</h4>
+                                <p class="text-xs text-slate-500">${u.bio || 'Available for guidance.'}</p>
+                                ${u.phone ? `<a href="https://wa.me/${u.phone.replace(/[^0-9]/g, '')}" target="_blank" class="block text-center bg-emerald-600 text-white font-bold text-xs py-2 rounded-xl mt-2">Contact via WhatsApp</a>` : ''}
+                            </div>
+                        `;
+                    }
+                });
+            });
+        }
     </script>
 </body>
 </html>
